@@ -1,0 +1,58 @@
+V3.0.0
+    - WebSocket 화 연결
+    - Level 권한 
+        - Normal
+            - Interest, Sensitive를 제외한 모든 Stocks.
+
+        - Interest
+            - Condition
+                - 전 틱(1분 전)보다 base_price보다 NORMAL_INTEREST_PRICE_PT 이상 오를 시.
+                - Behavior
+                    - Socket Subscribe
+            - Relegate
+                - INTEREST_TIME_MAX초 이상 Sensitive로 안 올라갈 경우
+                - Behavior
+                    - 강등
+                    - base_price현재 가격으로 수정. <- 이거 좀 수정.
+            
+        - Sensitive
+            - Condition
+                - INTEREST_TIME_MAX초 측정
+                    - 지속적으로 상승 중일 때
+                        - Interest 올릴 때, 마지막 1분 전틱 volume 양보다 1.5배 되는 경우
+                    #- BUY 수가 INTEREST_BUY_THRESHOLD틱 넘고, 체결강도 평균이 INTEREST_SENSITIVE_STRENGTH이 넘을 경우
+
+
+    https://wts-info-api.tossinvest.com/api/v2/stock-prices/wts?codes=US20201001014,NAS0231011003,US20150209001,US20201001014
+
+V4.0.0
+    1. 웹 서비스화
+        1.a: 전적 시스템
+            1.a.[1]: 감지시점(시간, 퍼센트), 최고(시간, 퍼센트) 표기방범
+        2: 그래프화
+            2.a: 그래프에 마우스 올리면 toss 해당 정목 iframe으로 뜸.
+        3. 알람 경보
+
+
+V5.0.0
+자동매매
+- 전략 (memo. 분당 체결 강도가 높아도 떨어질 수 있음)
+    1. current strength > 100 승세 & 가격 하락세, 다음 틱에 상승 예정 => 다음 틱 구매
+    2. current strength < 100 승세 & 가격 상승세, 다음 틱에 하락 예정 => 바로 판매 
+    3. 뭐랄까 현재 상승률 <-> current strength 간의 식을 도출해야할 듯, 가격 퍼센트로는 꽤 오르는데 current strength가 상대적으로 높지 않다면(current strength를 멤돈다면), 급하락 가능성
+- 틱 바뀌자 마자 BUY, SELL 비율 새로고침 하지 말고, Overlapping 시키는 구간 만들어야 함.
+
+#https://wts-info-api.tossinvest.com/api/v2/stock-prices/wts?codes=US20201001014,NAS0231011003,US20150209001,US20201001014
+한번에
+
+#https://wts-info-api.tossinvest.com/api/v1/stock-prices/US20210503001/ticks?count=120&session=0
+#https://wts-info-api.tossinvest.com/api/v2/stock-prices/US20210503001/period-candles/min:1?count=240&to=2024-12-19T06:34:00Z
+#https://wts-info-api.tossinvest.com/api/v2/stock-prices/US20210503001/period-candles/min:1?count=240&to=2024-12-19T11:10:00Z
+##https://wts-info-api.tossinvest.com/api/v2/stock-prices/US20210503001/period-candles/min:1?count=240&to=2024-12-19T11:10:00Z
+#https://wts-info-api.tossinvest.com/api/v2/stock-prices/US20210503001/period-candles/min:1?count=120
+    - KST 오후 9시 4분
+    - 1분전 스톡스
+    - 상대적인 Volume만으로 판단하면 정확하지 않음.
+        - Interests에 올린 뒤 값이 계속 라이브로 바뀌는 지 확인.
+            - Volume 지속적으로 상승, Price 상승 (Price 내려가든 말든 잡아보기)
+
